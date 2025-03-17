@@ -1,3 +1,11 @@
+networks:
+  monitor-net:
+    driver: bridge
+
+volumes:
+    prometheus_data: {}
+    grafana_data: {}
+
 services:
 
   prometheus:
@@ -108,30 +116,22 @@ services:
       org.label-schema.group: "monitoring"
 
   caddy:
-    image: caddy:latest
+    image: caddy:2.9.1
     container_name: caddy
     ports:
       - "3000:3000"
-      - "8080:8080"
+      - "8081:8080"
       - "9090:9090"
       - "9093:9093"
-      - "9100:9100"
+      - "9091:9091"
     volumes:
       - ./caddy:/etc/caddy
     environment:
       - ADMIN_USER=${ADMIN_USER:-admin}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
       - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH:-$2a$14$1l.IozJx7xQRVmlkEQ32OeEEfP5mRxTpbDTCTcXRqn19gXD8YK1pO}
-#    restart: unless-stopped
+    restart: unless-stopped
     networks:
       - monitor-net
     labels:
       org.label-schema.group: "monitoring"
-
-networks:
-  monitor-net:
-    driver: bridge
-
-volumes:
-    prometheus_data: {}
-    grafana_data: {}
